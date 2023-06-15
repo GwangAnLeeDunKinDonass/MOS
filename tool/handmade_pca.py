@@ -5,23 +5,29 @@
 
 
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from pprint import pprint
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn import metrics
+
 from imblearn.over_sampling import SMOTE
-from pprint import pprint
+
+from tensorflow.keras.callbacks import EarlyStopping
 
 from tool.visualize_tool import twod_visualization, threed_visualization
+from .model.DL_model import dnn
 
 class handmade_pca:
     
     def __init__(self, df):
         # Desingnate x & y Variable
         self.df = df
-        self.model_kind = {'.dnn()':'딥러닝 모델',
-                           '.random_forest()':'랜덤포레스트 모델'}
+        self.model_kind = {'dnn':'딥러닝 모델',
+                           'random_forest':'랜덤포레스트 모델'}
         
         print('변수:')
         for idx, col in enumerate(df.columns.tolist()):
@@ -214,8 +220,50 @@ class handmade_pca:
         self.y_val = y_val
         self.y_test = y_test
         
-        print("데이터 분할을 완료했습니다. '.model_kind'를 통해 활용 가능한 모델을 확인해주세요.")
+        print("데이터 분할을 완료했습니다. '.train()'를 통해 학습을 시작해주세요.")
         
-    def model_kind(self):
+    def train(self):
         pprint(self.model_kind)
+        kind = input('학습을 진행하기 위해 모델 리스트 중 원하는 모델을 골라주세요.\n')
+        if kind == 'dnn':
+            self.model = dnn(self.x_train.shape[1])
+            
+            self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+            
+            callbacks = [EarlyStopping(monitor='val_loss',patience=6, mode='min')]
+            
+            self.model.fit(self.x_train, self.y_train, epochs=100,
+                           validation_data = (self.x_val, self.y_val),
+                           batch_size=64, verbose=2, callbacks=callbacks)
+            
+            print("학습이 종료되었습니다.'.predict()'를 통해 예측 및 분류를 진행해주세요.")
+            
+    def predict(self):
+        y_pred = self.model.predict(self.x_test)
+
+        y_pred = y_pred.reshape(-1)
+
+        for y in range(len(y_pred)):
+            if y_pred[y] >= 0.5:
+                y_pred[y] = 1
+            else:
+                y_pred[y] = 0
+
+        self.y_pred = y_pred.reshape(-1,1)
+        
+        accuracy = metrics.accuracy_score(self.y_test, y_pred)
+        print("정확도:", accuracy)
+
+        precision = metrics.precision_score(self.y_test, y_pred)
+        print("정밀도:", precision)
+
+        recall = metrics.recall_score(self.y_test, y_pred)
+        print("재현율:", recall)
+
+        f1 = metrics.f1_score(self.y_test, y_pred)
+        print("f1 점수:", f1)
+        
+        print("학습이 종료되었습니다. 다른 모델을 학습하려면 다시 '.train()'를 실행하세요.")
+        
+        return self.y_pred
 
