@@ -228,9 +228,9 @@ class handmade_pca:
         if kind == 'dnn':
             self.model = dnn(self.x_train.shape[1])
             
-            self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+            self.model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
             
-            callbacks = [EarlyStopping(monitor='val_loss',patience=6, mode='min')]
+            callbacks = [EarlyStopping(monitor='val_loss',patience=5, mode='min')]
             
             self.model.fit(self.x_train, self.y_train, epochs=100,
                            validation_data = (self.x_val, self.y_val),
@@ -264,6 +264,4 @@ class handmade_pca:
         print("f1 점수:", f1)
         
         print("학습이 종료되었습니다. 다른 모델을 학습하려면 다시 '.train()'를 실행하세요.")
-        
-        return self.y_pred
 

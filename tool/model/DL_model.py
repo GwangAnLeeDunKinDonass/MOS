@@ -12,9 +12,9 @@ from tensorflow.keras.layers import *
 def dnn(input_shape):
     model_input = Input(shape=(input_shape,))
     m = Dense(128, activation='relu')(model_input)
-    m = Dense(64, activation='relu')(model_input)
+    m = Dense(64, activation='relu')(m)
     m = Dropout(0.3)(m)
-    m = Dense(32, activation='relu')(model_input)
+    m = Dense(32, activation='relu')(m)
     model_output = Dense(1, activation='sigmoid')(m)
     
     model = Model(model_input, model_output)
