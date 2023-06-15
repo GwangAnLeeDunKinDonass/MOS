@@ -234,7 +234,7 @@ class handmade_pca:
             
             self.model.fit(self.x_train, self.y_train, epochs=100,
                            validation_data = (self.x_val, self.y_val),
-                           batch_size=64, verbose=2, callbacks=callbacks)
+                           batch_size=64, verbose=1, callbacks=callbacks)
             
             print("학습이 종료되었습니다.'.predict()'를 통해 예측 및 분류를 진행해주세요.")
             
