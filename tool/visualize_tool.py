@@ -39,7 +39,7 @@ def threed_visualization(df):
         indicesToKeep = (data == target)
         ax.scatter(df.loc[indicesToKeep, 'PC1']
                    , df.loc[indicesToKeep, 'PC2']
-                   , pdf.loc[indicesToKeep, 'PC3']
+                   , df.loc[indicesToKeep, 'PC3']
                    , s = 50)
     ax.legend(targets)
     ax.grid()
